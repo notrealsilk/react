@@ -29,7 +29,40 @@ Currently, two official plugins are available:
 
 - reflow : 레이아웃이 변경되면 레이아웃을 재계산하는 과정
 - repaint : 레이아웃이 변경되면 다시 그리는 과정
+
   - -> 이 기능은 오래 걸림..
+
+- 해결방법 : 가상돔을 사용해서 dom 수정을 최소화 해줌
 
 ![img](./image/img2.png)
 -> 가상돔을 사용해서 dom 수정을 최소화 해줌
+
+## Vite 특징
+
+- 빠르게 리액트 개발환경을 구축 가능
+
+### 사용법
+
+```bash
+npm create vite@latest
+```
+
+## 리액트 폴더 구조
+
+- public : 정적 파일 저장 / 이미지, 폰트, 동영상 등
+
+- src : 코드 저장 / 컴포넌트, 페이지, 스타일 등
+
+- node_modules : 라이브러리 저장 (package.json에 명시된 라이브러리)
+
+- eslintrc.js : eslint 설정 파일 / 코드 스타일을 설정
+
+- index.html : 웹 페이지의 뼈대 / 자바스크립트로 생성된 요소를 담는 역할.. dom 수정할 때 기본 뼈대가 되는 파일
+
+## 리액트 실행
+
+```bash
+npm run dev
+```
+
+
