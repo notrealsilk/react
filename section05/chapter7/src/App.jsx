@@ -1,6 +1,6 @@
-import "./App.css";
-import Bulb from "./components/Bulb";
-import Counter from "./components/Counter";
+import "./App.css"
+import Bulb from "./components/Bulb"
+import Counter from "./components/Counter"
 
 function App() {
   return (
@@ -8,7 +8,7 @@ function App() {
       <Bulb />
       <Counter />
     </>
-  );
+  )
 }
 
-export default App;
+export default App
