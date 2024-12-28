@@ -1,4 +1,8 @@
+/* Main.jsx 스타일 적용하는 파일 */
+/* Main.css 파일 만들면 적용가능 */
+
 .logout {
   background-color: red;
   border-bottom: 5px solid green;
 }
+
