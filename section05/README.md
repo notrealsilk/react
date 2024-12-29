@@ -1,5 +1,28 @@
 # 5. 리액트 입문
 
+## 프로젝트 생성
+
+1. Node.js 설치 확인
+
+```bash
+node -v
+npm -v
+```
+
+2. 리액트 프로젝트 생성
+
+```bash
+  # 프로젝트 생성
+  npx create-react-app 프로젝트이름
+
+  # 프로젝트 폴더로 이동
+  cd 프로젝트이름
+
+  # 개발 서버 실행
+  npm start
+
+```
+
 ## 설정
 
 #### ESLint
@@ -103,3 +126,87 @@ if (user.isLogin) {
   - 제공받은 props가 변경되면 컴포넌트는 리렌더링됨
 
   - 부모 컴포넌트가 리렌더링되면 자식 컴포넌트는 리렌더링됨
+
+## State를 활용한 로그인 폼 만들기
+
+- 회원가입 만들기 가능
+
+  ![img](./image/6.png)
+
+  - 콘솔창에서 target -> value엣서 input의 값 확인 가능
+
+  '''jsx
+  return(
+  <div>
+  <input
+  value={name}
+  onChange={onChangeName}
+  placeholder={"이름"} {/_ placeholder -> 아무 값도 입력안했을 때 회색으로 나오는 문구_/}
+  />
+  </div>
+  )
+  '''
+
+  - 사용자의 입력, 처리할 때, 초기값을 활용하는 경우가 있기 때문에, onChange()뿐만아니라 value 속성까지 함께 설정하기!
+
+## State 묶어주기
+
+- 각 state를 하나의 객체로 묶어서 데이터 관리하기
+
+```jsx
+const Register = () => {
+  const [input, setInput] = useState({
+    name: "",
+    gender: "",
+    bio: "",
+  });
+
+  // 이벤트 핸들러도 통합가능
+  const onChange = (e) => {
+  console.log(e.target.name + " : " + e.target.value)
+  setInput({
+    // 전개 구문 -> 변경 x값 / 변경 o값만 객체에 추가
+    ...input,
+    [e.target.name]: e.target.value,
+  })
+}
+```
+
+## useRef
+
+- 새로운 레퍼런스 객체를 생성하는 기능
+
+- 리렌더링에 영향을 받지 않는 값을 관리할 때 사용
+
+  - 컴포넌트가 리렌더링되어도 변수가 다시 리셋되지 않음
+
+  - 리액트는 컴포넌트 외부에 변수를 선언하는 것이 권장 x
+
+  -> so, 이럴 경우 useRef를 사용하여 해결
+
+![Img](./image/7.png)
+
+- 특정 요소의 조작, 특정 요소에 포커스를 줄 때 사용
+
+![Img](./image/8.png)
+
+## react Hooks
+
+- 클래스 컴포넌트에서만 사용할 수 있는 기능을 함수 컴포넌트에서 사용할 수 있게 해주는 기능
+
+- src/hooks 폴더 생성하여 커스텀 Hooks 생성 가능
+
+- 예시
+
+  - useState : 함수 컴포넌트에서도 state를 사용할 수 있게 해줌
+  - useRef : 함수 컴포넌트에서도 ref를 사용할 수 있게 해줌
+
+  -> react Hooks은 use 접두사를 가지고 있음
+
+![img](./image/9.png)
+
+- 함수 컴포넌트 내부에서만 호출 가능
+
+- 조건문, 반복문 내부에서는 사용 불가능
+
+- 커스텀 Hooks도 만들 수 있음

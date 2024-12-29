@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react"
 // 간단한 회원가입 폼
 // 1. 이름
 // 2. 생년월일
@@ -10,42 +10,30 @@ const Register = () => {
     name: "",
     gender: "",
     bio: "",
-  });
+  })
 
   const onChange = (e) => {
-    console.log(e.target.name + " : " + e.target.value);
+    console.log(e.target.name + " : " + e.target.value)
     setInput({
+      // 전개 구문 -> 변경 x값 / 변경 o값만 객체에 추가
       ...input,
+      // [e.target.name] -> []에 의해 key값이 됨
       [e.target.name]: e.target.value,
-    });
-  };
+    })
+  }
 
   return (
     <div>
       <div>
-        <input
-          name="name"
-          value={input.name}
-          onChange={onChange}
-          placeholder={"이름"}
-        />
+        <input name="name" value={input.name} onChange={onChange} placeholder={"이름"} />
       </div>
 
       <div>
-        <input
-          name="birth"
-          value={input.birth}
-          onChange={onChange}
-          type="date"
-        />
+        <input name="birth" value={input.birth} onChange={onChange} type="date" />
       </div>
 
       <div>
-        <select
-          name="country"
-          value={input.country}
-          onChange={onChange}
-        >
+        <select name="country" value={input.country} onChange={onChange}>
           <option value=""></option>
           <option value="kr">한국</option>
           <option value="us">미국</option>
@@ -54,14 +42,10 @@ const Register = () => {
       </div>
 
       <div>
-        <textarea
-          name="bio"
-          value={input.bio}
-          onChange={onChange}
-        />
+        <textarea name="bio" value={input.bio} onChange={onChange} />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register
