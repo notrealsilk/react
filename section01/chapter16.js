@@ -5,7 +5,8 @@ const animal = {
   color: "black",
 };
 
-animal.age = 2; // 추가
+// 상수 객체는 프로퍼티는 추가, 수정, 삭제 가능 (값 할당만 불가)
+animal.age = 2; // 추가 
 animal.name = "까망이"; // 수정
 delete animal.color; // 삭제
 
