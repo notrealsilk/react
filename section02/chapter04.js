@@ -18,7 +18,7 @@ let obj2 = {
 function funcA(p1, p2, p3) {
   //   console.log(p1, p2, p3);
 }
-
+// 매개변수로 전달할 때 Spread 연산자 사용 (매개변수 3개가 돼..)
 funcA(...arr1);
 
 // 2. Rest 매개변수
