@@ -1,12 +1,16 @@
+/* 요소 옆에 외각 */
 body {
   padding: 20px;
 }
 
+/* 화면의 요소가 반응형이라도 무조건 가운데 가도록 설정 */
+/* margin: 0 auto; -> 화면 상 남는 부분을 자동으로 마진 설정 */
 .App {
   margin: 0 auto;
   width: 400px;
 }
 
+/* .App > section : 앱 컴포넌트 안에 section태그에 설정  */
 .App > section {
   background-color: rgb(245, 245, 245);
   border: 1px solid rgb(240, 240, 240);
