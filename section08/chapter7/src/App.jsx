@@ -48,25 +48,32 @@ function App() {
     setTodos([newTodo, ...todos]) // 새로 추가한 todo + 기존 todos 배열 (스프레드 연산자 사용)
   }
 
+  // 수정 : 체크박스 클릭 시 isDone 값 변경
+  // todoitem 컴포넌트로 pros로 데이터 전달
   const onUpdate = (targetId) => {
     // todos State의 값들 중에
     // targetId와 일치하는 id를 갖는 투두 아이템의 isDone 변경
 
     // 인수: todos 배열에서 targetId와 일치하는 id를 갖는 요소의 데이터만 딱 바꾼 새로운 배열
+    // id값이 같다면 isDone값을 반대로 변경 (스프레드 연산자로 다른 todo는 냅두고 해당 todo만 토글) / 아니라면 기존 todo 그대로
     setTodos(todos.map((todo) => (todo.id === targetId ? { ...todo, isDone: !todo.isDone } : todo)))
   }
 
+  // DELETE : 삭제 버튼 클릭 시 해당 아이템 삭제
   const onDelete = (targetId) => {
     // 인수: todos 배열에서 targetId와 일치하는 id를 갖는 요소만 삭제한 새로운 배열
+    // filter : 조건에 맞는 요소만 추출하여 새로운 배열로 반환 (id가 같아야 삭제 ㅇ)
     setTodos(todos.filter((todo) => todo.id !== targetId))
   }
 
   return (
     <div className="App">
       <Header />
-      <Editor onCreate={onCreate} /> {/* props로 데이터 전달 */}
-      {/* props 변수명 = 부모컴포넌트의 함수 */}
+      <Editor onCreate={onCreate} /> {/* props로 데이터 전달 */} {/* props 변수명 = 부모컴포넌트의 함수 */}
       <List todos={todos} onUpdate={onUpdate} onDelete={onDelete} />
+      {/* READ 기능을 위해 todos 데이터를 list 컴포넌트로 넘김 */}
+      {/* UPDATE 기능을 위해 onUpdate함수를 하위 컴포넌트로 넘김 */}
+      {/* DELETE 기능을 위해 onDelete힘수를 하위 컴포넌트로 넘김*/}
     </div>
   )
 }

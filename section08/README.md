@@ -197,8 +197,254 @@ rules: {
 
   ### Create
 
-  ### Read
+  #### 1. 주요 흐름
 
-  ### Update
+  1. **Editor에서 입력** → **App의 `onCreate` 호출** → **`todos` 상태 업데이트** → **UI 리렌더링**.
 
-  ### Delete
+  ***
+
+  #### 2. 소소기능 3개
+
+  1. **입력값 없을 때 포커스 이동**:
+
+     - `inputRef.current.focus()`를 사용해 입력창으로 다시 포커스.
+
+  2. **Enter 키로 Todo 추가**:
+
+     - `onKeydown` 이벤트로 Enter 키 입력 시 `onSubmit` 호출.
+
+  3. **입력값 초기화**:
+
+     - Todo 추가 후 `setContent("")`로 입력창 초기화.
+
+  ***
+
+  #### 3. 핵심 코드
+
+  - **App.jsx**
+
+    ```jsx
+    const onCreate = (content) => {
+      const newTodo = {
+        id: idRef.current++, // 고유 ID 생성
+        isDone: false,
+        content,
+        date: new Date().getTime(), // 생성 시간
+      }
+      setTodos([newTodo, ...todos]) // 상태 업데이트
+    }
+    ```
+
+  - **Editor.jsx**
+
+    ```jsx
+    const onSubmit = () => {
+      if (content === "") {
+        inputRef.current.focus() // 입력값 없으면 포커스
+        return
+      }
+      onCreate(content) // App의 onCreate 호출
+      setContent("") // 입력값 초기화
+    }
+
+    const onKeydown = (e) => {
+      if (e.keyCode === 13) onSubmit() // Enter 키 처리
+    }
+    ```
+
+  #### 4. 복습 포인트
+
+  - **상태 업데이트**: `setTodos([newTodo, ...todos])`
+  - **고유 ID 관리**: `useRef` 사용 (`idRef.current++`)
+  - **소소기능**: 포커스 이동, Enter 키 추가, 입력값 초기화
+
+### Read
+
+#### 1. 주요 흐름
+
+1. **`App`에서 todos 데이터 전달** → **`List` 컴포넌트에서 검색 및 필터링** → **`TodoItem` 컴포넌트로 렌더링**.
+
+---
+
+#### 2. 주요 기능
+
+1. **검색 기능 (List.jsx)**:
+
+   - 사용자가 입력한 검색어를 기반으로 `todos`를 필터링.
+   - **코드**:
+     ```jsx
+     const getFilteredData = () => {
+       if (search === "") return todos
+       return todos.filter((todo) => todo.content.toLowerCase().includes(search.toLowerCase()))
+     }
+     ```
+
+2. **Todo 렌더링 (List.jsx)**:
+
+   - 필터링된 Todo 리스트를 `map`으로 반복 처리해 `TodoItem` 컴포넌트로 렌더링.
+   - 각 Todo는 고유한 `key` 값을 사용.
+   - **코드**:
+     ```jsx
+     {
+       filteredTodos.map((todo) => <TodoItem key={todo.id} {...todo} onUpdate={onUpdate} onDelete={onDelete} />)
+     }
+     ```
+
+3. **Todo 상세 렌더링 (TodoItem.jsx)**:
+
+   - Todo의 상태(`isDone`)를 체크박스로 표시하고, `content`와 `date`를 보여줌.
+   - **코드**:
+     ```jsx
+     <input
+       onChange={onChangeCheckbox}
+       readOnly
+       checked={isDone}
+       type="checkbox"
+     />
+     <div className="content">{content}</div>
+     <div className="date">{new Date(date).toLocaleDateString()}</div>
+     ```
+
+#### 3. 소소기능
+
+1. **검색어 대소문자 무시**:
+
+   - `toLowerCase()`를 사용해 대소문자 구분 없이 검색.
+
+2. **검색어 없을 때 전체 출력**:
+
+   - `if (search === "") return todos;`로 검색어가 비어있으면 전체 데이터를 출력.
+
+3. **고유 `key` 설정**:
+
+   - React의 리스트 렌더링 최적화를 위해 Todo의 `id`를 `key`로 사용.
+
+#### 4. 복습 포인트
+
+- **상태 전달**: `App`에서 `todos`, `onUpdate`, `onDelete`를 `List`로 전달.
+- **검색 기능**: 입력한 검색어로 `todos` 배열을 필터링.
+- **렌더링**: 필터링된 `todos`를 `TodoItem` 컴포넌트로 표시.
+
+### Update
+
+#### 1. 주요 흐름
+
+1. **TodoItem의 체크박스 클릭** → **`onUpdate` 호출** → **`todos` 상태 업데이트** → **UI 리렌더링**.
+
+---
+
+#### 2. 주요 기능
+
+1. **체크박스 상태 업데이트 (`App.jsx`)**:
+
+   - **`onUpdate` 함수**:
+     - `todos` 배열을 순회하며 `id`가 일치하는 Todo의 `isDone` 값을 반대로 변경.
+     - 새로운 배열로 상태를 업데이트하여 React가 UI를 다시 렌더링.
+     - **코드**:
+       ```jsx
+       const onUpdate = (targetId) => {
+         setTodos(todos.map((todo) => (todo.id === targetId ? { ...todo, isDone: !todo.isDone } : todo)))
+       }
+       ```
+
+2. **체크박스 이벤트 핸들링 (`TodoItem.jsx`)**:
+
+   - **`onChangeCheckbox` 함수**:
+     - 체크박스 클릭 시 `onUpdate`를 호출해 Todo의 `isDone` 값을 변경.
+     - **코드**:
+       ```jsx
+       const onChangeCheckbox = () => {
+         onUpdate(id)
+       }
+       ```
+
+3. **`isDone` 값에 따라 UI 변경 (`TodoItem.jsx`)**:
+   - **체크박스 상태와 연결**:
+     - `checked` 속성에 `isDone` 값을 연결하여 상태에 따라 체크 여부가 반영.
+     - **코드**:
+       ```jsx
+       <input onChange={onChangeCheckbox} readOnly checked={isDone} type="checkbox" />
+       ```
+
+---
+
+#### 3. 소소기능
+
+1. **`isDone` 값 토글**:
+   - 클릭 시 `!todo.isDone`로 현재 상태를 반전.
+2. **상태 변경만 반영**:
+   - 배열 전체를 새로 생성하지 않고 변경된 Todo만 업데이트.
+3. **체크박스와 UI 연동**:
+   - `checked` 속성을 통해 상태를 반영.
+
+---
+
+#### 4. 복습 포인트
+
+- **체크박스 이벤트**: `onChange`로 `onUpdate` 호출.
+- **상태 업데이트**: `map`과 스프레드 연산자로 상태 변경.
+- **UI와 상태 연동**: `checked={isDone}`로 상태 반영.
+
+---
+
+### Delete
+
+#### 1. 주요 흐름
+
+1. **TodoItem의 삭제 버튼 클릭** → **`onDelete` 호출** → **`todos` 상태 업데이트** → **UI 리렌더링**.
+
+---
+
+#### 2. 주요 기능
+
+1. **Todo 삭제 (`App.jsx`)**:
+
+   - **`onDelete` 함수**:
+     - `todos` 배열에서 `id`가 `targetId`와 일치하지 않는 Todo만 필터링해 새로운 배열 생성.
+     - **코드**:
+       ```jsx
+       const onDelete = (targetId) => {
+         setTodos(todos.filter((todo) => todo.id !== targetId))
+       }
+       ```
+
+2. **삭제 버튼 이벤트 핸들링 (`TodoItem.jsx`)**:
+
+   - **`onClickDeleteButton` 함수**:
+     - 삭제 버튼 클릭 시 `onDelete`를 호출해 해당 Todo 삭제.
+     - **코드**:
+       ```jsx
+       const onClickDeleteButton = () => {
+         onDelete(id)
+       }
+       ```
+
+3. **List와 TodoItem 연결 (`List.jsx`)**:
+   - `onDelete` 함수가 `props`로 전달되어 TodoItem에서 호출 가능.
+
+---
+
+#### 3. 소소기능
+
+1. **`filter`로 삭제 구현**:
+   - `todos.filter`를 사용해 조건에 맞는 요소만 남김.
+2. **삭제 버튼 클릭으로 UI 반영**:
+   - React가 상태 변화를 감지해 UI 자동 업데이트.
+3. **props 활용**:
+   - `onDelete`를 TodoItem까지 전달해 모듈화된 이벤트 처리.
+
+---
+
+#### 4. 복습 포인트
+
+- **삭제 로직**: `todos.filter((todo) => todo.id !== targetId)`.
+- **상태 업데이트**: `setTodos`로 새로운 배열을 설정해 상태 변경.
+- **컴포넌트 연결**: App → List → TodoItem으로 `onDelete` 전달.
+
+---
+
+### 마무리
+
+- display: flex
+  - 원하는 요소를 가로로 배치
+- 배열 형태의 데이터를 리스트 형태로 렌더링 (CRUD)
