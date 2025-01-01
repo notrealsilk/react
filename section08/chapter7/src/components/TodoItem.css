@@ -1,6 +1,6 @@
 .TodoItem {
-  display: flex;
-  align-items: center;
+  display: flex; /* 요소들 가로 배치 */
+  align-items: center; /* 열을 기준으로 가운데 정렬 */
   gap: 20px;
   padding-bottom: 20px;
   border-bottom: 1px solid rgb(240, 240, 240);
@@ -10,8 +10,9 @@
   width: 20px;
 }
 
+/* TodoItem 아래에 있는 content에 적용하는 클래스 스타일  */
 .TodoItem .content {
-  flex: 1;
+  flex: 1; /* 부모요소 내에서 최대로 늘어날 수 있을 만큼 크기 가로로 늘리기 */
 }
 
 .TodoItem .date {
@@ -25,5 +26,5 @@
   font-size: 14px;
   border: none;
   border-radius: 5px;
-  padding: 5px;
+  padding: 5px; /* 내부 여백 */
 }

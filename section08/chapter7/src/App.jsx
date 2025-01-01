@@ -1,15 +1,17 @@
-import "./App.css";
-import { useRef, useState } from "react";
-import Header from "./components/Header";
-import Editor from "./components/Editor";
-import List from "./components/List";
+import "./App.css"
+import { useRef, useState } from "react"
+import Header from "./components/Header"
+import Editor from "./components/Editor"
+import List from "./components/List"
 
+// App 컴포넌트에서 사용할 초기 데이터 (임시 데이터)
+// 각 todo를 객체로 관리
 const mockData = [
   {
-    id: 0,
-    isDone: false,
-    content: "React 공부하기",
-    date: new Date().getTime(),
+    id: 0, // 고유 id
+    isDone: false, // 체크박스
+    content: "React 공부하기", // 내용
+    date: new Date().getTime(), // 생성날짜 / 타임스템프 사용
   },
   {
     id: 1,
@@ -23,53 +25,50 @@ const mockData = [
     content: "노래 연습하기",
     date: new Date().getTime(),
   },
-];
+]
 
 function App() {
-  const [todos, setTodos] = useState(mockData);
-  const idRef = useRef(3);
+  // state로 todos 배열을 관리
+  // mockData를 초기값으로 설정 -> 화면이 처음 렌더링되면 mockData가 화면에 출력
+  const [todos, setTodos] = useState(mockData)
+  // useRef를 사용하여 고유 id를 관리
+  const idRef = useRef(3) // 초기 id 값은 3 (다른 값과 겹치지 않게하기 위해..)
 
+  // Editor 컴포넌트에서 입력한 내용(content)을 받아서 todos 배열에 추가 (onCreate)
   const onCreate = (content) => {
     const newTodo = {
-      id: idRef.current++,
+      id: idRef.current++, // useRef를 사용하여 id를 관리 / 새로운 값이 입력되면 1씩 증가
       isDone: false,
       content: content,
       date: new Date().getTime(),
-    };
+    }
 
-    setTodos([newTodo, ...todos]);
-  };
+    // push 대신 상태변화함수인 setTodo를 사용해야 인수로 받은 데이터를 todos 배열에 추가할 수 있음
+    // 그래야 리액트가 상태변화를 감지하고 화면을 다시 렌더링함 (setState 함수를 사용해야 함)
+    setTodos([newTodo, ...todos]) // 새로 추가한 todo + 기존 todos 배열 (스프레드 연산자 사용)
+  }
 
   const onUpdate = (targetId) => {
     // todos State의 값들 중에
     // targetId와 일치하는 id를 갖는 투두 아이템의 isDone 변경
 
     // 인수: todos 배열에서 targetId와 일치하는 id를 갖는 요소의 데이터만 딱 바꾼 새로운 배열
-    setTodos(
-      todos.map((todo) =>
-        todo.id === targetId
-          ? { ...todo, isDone: !todo.isDone }
-          : todo
-      )
-    );
-  };
+    setTodos(todos.map((todo) => (todo.id === targetId ? { ...todo, isDone: !todo.isDone } : todo)))
+  }
 
   const onDelete = (targetId) => {
     // 인수: todos 배열에서 targetId와 일치하는 id를 갖는 요소만 삭제한 새로운 배열
-    setTodos(todos.filter((todo) => todo.id !== targetId));
-  };
+    setTodos(todos.filter((todo) => todo.id !== targetId))
+  }
 
   return (
     <div className="App">
       <Header />
-      <Editor onCreate={onCreate} />
-      <List
-        todos={todos}
-        onUpdate={onUpdate}
-        onDelete={onDelete}
-      />
+      <Editor onCreate={onCreate} /> {/* props로 데이터 전달 */}
+      {/* props 변수명 = 부모컴포넌트의 함수 */}
+      <List todos={todos} onUpdate={onUpdate} onDelete={onDelete} />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

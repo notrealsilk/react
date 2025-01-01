@@ -7,8 +7,8 @@
 .List > input {
   width: 100%;
   border: none;
-  border-bottom: 1px solid rgb(220, 220, 220);
-  padding: 15px 0px;
+  border-bottom: 1px solid rgb(220, 220, 220); /* 하단 테두리만 생성*/
+  padding: 15px 0px; /* 위, 아래 바깥 여백 */
 }
 
 .List > input:focus {
@@ -18,6 +18,6 @@
 
 .List .todos_wrapper {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  flex-direction: column; /* todo아이템을 새로로 배치 */
+  gap: 20px; /* 각 요소간의 간격 */
 }

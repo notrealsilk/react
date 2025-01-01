@@ -1,8 +1,9 @@
 .App {
+  /* 요소들을 화면 가운데 배치 */
   width: 500px;
   margin: 0 auto;
 
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: flex; /* 자식 요소를 가로로 배치 (자식요소 구성을 용이하게 해줌) */
+  flex-direction: column; /* display를 열 기준으로 세로로 요소 배치 */
+  gap: 10px; /* display: flex;가 적용된 요소간의 간격을 생성  */
 }
