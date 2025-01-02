@@ -1,11 +1,13 @@
+/* 헤더 최상위의 스타일 */
 .Header {
-  display: flex;
-  align-items: center;
+  display: flex; /* 자식 요소 가로방향 배치 */
+  align-items: center; /* 가운데 정렬 */
 
-  padding: 20px 0px;
+  padding: 20px 0px; /* 위아래 여백 */
   border-bottom: 1px solid rgb(226, 226, 226);
 }
 
+/* 헤더 바로 아래에 있는 div태그들에 적용 */
 .Header > div {
   display: flex;
 }
@@ -13,7 +15,7 @@
 .Header .header_center {
   width: 50%;
   font-size: 25px;
-  justify-content: center;
+  justify-content: center; /* display: flex;에서 자식 요소를 가운데로 위치 */
 }
 
 .Header .header_left {

@@ -1,11 +1,11 @@
 .Button {
   background-color: rgb(236, 236, 236);
-  cursor: pointer;
+  cursor: pointer; /* 마우스 올리면 커서 모양ㅇ */
   border: none;
   border-radius: 5px;
-  padding: 10px 20px;
+  padding: 10px 20px; /* 내부여백 */
   font-size: 18px;
-  white-space: nowrap;
+  white-space: nowrap; /* 버튼안의 글씨가 반응형이 되어도 버튼 글씨가 밑으로 안 내려감 */
 }
 
 .Button_POSITIVE {
