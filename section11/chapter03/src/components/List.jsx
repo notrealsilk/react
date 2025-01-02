@@ -1,45 +1,40 @@
-import "./List.css";
-import TodoItem from "./TodoItem";
-import { useState, useMemo, useContext } from "react";
-import { TodoStateContext } from "../App";
+import "./List.css"
+import TodoItem from "./TodoItem"
+import { useState, useMemo, useContext } from "react"
+import { TodoStateContext } from "../App"
 
 const List = () => {
-  const todos = useContext(TodoStateContext);
+  // context생성 -> 컴포넌트 외부에서 선언
+  // todos : 더 이상 객체가 아니어서 구조분해할당 풀어주기
+  const todos = useContext(TodoStateContext)
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState("")
 
   const onChangeSearch = (e) => {
-    setSearch(e.target.value);
-  };
+    setSearch(e.target.value)
+  }
 
   const getFilteredData = () => {
     if (search === "") {
-      return todos;
+      return todos
     }
-    return todos.filter((todo) =>
-      todo.content
-        .toLowerCase()
-        .includes(search.toLowerCase())
-    );
-  };
+    return todos.filter((todo) => todo.content.toLowerCase().includes(search.toLowerCase()))
+  }
 
-  const filteredTodos = getFilteredData();
+  const filteredTodos = getFilteredData()
 
-  const { totalCount, doneCount, notDoneCount } =
-    useMemo(() => {
-      console.log("getAnalyzedData 호출!");
-      const totalCount = todos.length;
-      const doneCount = todos.filter(
-        (todo) => todo.isDone
-      ).length;
-      const notDoneCount = totalCount - doneCount;
+  const { totalCount, doneCount, notDoneCount } = useMemo(() => {
+    console.log("getAnalyzedData 호출!")
+    const totalCount = todos.length
+    const doneCount = todos.filter((todo) => todo.isDone).length
+    const notDoneCount = totalCount - doneCount
 
-      return {
-        totalCount,
-        doneCount,
-        notDoneCount,
-      };
-    }, [todos]);
+    return {
+      totalCount,
+      doneCount,
+      notDoneCount,
+    }
+  }, [todos])
   // 의존성배열 : deps
 
   return (
@@ -50,18 +45,14 @@ const List = () => {
         <div>done: {doneCount}</div>
         <div>notDone: {notDoneCount}</div>
       </div>
-      <input
-        value={search}
-        onChange={onChangeSearch}
-        placeholder="검색어를 입력하세요"
-      />
+      <input value={search} onChange={onChangeSearch} placeholder="검색어를 입력하세요" />
       <div className="todos_wrapper">
         {filteredTodos.map((todo) => {
-          return <TodoItem key={todo.id} {...todo} />;
+          return <TodoItem key={todo.id} {...todo} />
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default List;
+export default List

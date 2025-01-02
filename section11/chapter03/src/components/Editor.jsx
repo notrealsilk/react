@@ -3,6 +3,7 @@ import "./Editor.css";
 import { TodoDispatchContext } from "../App";
 
 const Editor = () => {
+  // context로 부터 제공된 데이터 가져옴
   const { onCreate } = useContext(TodoDispatchContext);
   const [content, setContent] = useState("");
   const inputRef = useRef();
