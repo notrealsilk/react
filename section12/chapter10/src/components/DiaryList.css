@@ -1,9 +1,11 @@
+/* 다이어리 메뉴바 전체 스타일 */
 .DiaryList .menu_bar {
-  margin: 20px 0px;
+  margin: 20px 0px; /* 외부여백 */
   display: flex;
   gap: 10px;
 }
 
+/* 정렬필터 스타일 */
 .DiaryList .menu_bar select {
   background-color: rgb(236, 236, 236);
   border: none;
@@ -15,5 +17,5 @@
 }
 
 .DiaryList .menu_bar button {
-  flex: 1;
+  flex: 1; /* 버튼의 넓이를 최대한 크기하는 설정 */
 }

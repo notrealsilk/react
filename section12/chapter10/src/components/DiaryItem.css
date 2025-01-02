@@ -1,7 +1,7 @@
 .DiaryItem {
-  display: flex;
+  display: flex; /* 요소들 가로 배치 */
   gap: 15px;
-  justify-content: space-between;
+  justify-content: space-between; /* 요소들이 간격이 최대한 벌어지게 함 */
 
   padding: 15px 0px;
   border-bottom: 1px solid rgb(236, 236, 236);
@@ -12,20 +12,22 @@
   height: 80px;
 
   display: flex;
-  justify-content: center;
+  justify-content: center; /* 이미지 섹션안에 있는 모든 요소가 가운데 배치 */
   cursor: pointer;
 
   border-radius: 5px;
 }
 
+/* 감정 이미지 보기좋게 조정 */
 .DiaryItem .img_section > img {
   width: 50%;
 }
 
+/* 감정이미지1 일 경우 적용될 css */
 .DiaryItem .img_section_1 {
   background-color: rgb(100, 201, 100);
 }
-
+/* 감정이미지2 일 경우 적용될 css */
 .DiaryItem .img_section_2 {
   background-color: rgb(157, 215, 114);
 }
@@ -43,7 +45,7 @@
 }
 
 .DiaryItem .info_section {
-  flex: 1;
+  flex: 1; /* 일기 info 부분이 화면 끝까지 늘어나게 설정 */
   cursor: pointer;
 }
 
@@ -57,5 +59,5 @@
 }
 
 .DiaryItem .button_section {
-  min-width: 70px;
+  min-width: 70px; /* 버튼 최소 넓이 */
 }

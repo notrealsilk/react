@@ -1,5 +1,5 @@
-import { getEmotionImage } from "../util/get-emotion-image";
-import Button from "./Button";
+import { getEmotionImage } from "../util/get-emotion-image"; // util 폴더 안의 함수 가져오기
+import Button from "./Button"; 
 import "./DiaryItem.css";
 
 const DiaryItem = () => {
@@ -7,7 +7,9 @@ const DiaryItem = () => {
 
   return (
     <div className="DiaryItem">
+      {/* 감정 이미지 */}
       <div className={`img_section img_section_${emotionId}`}>
+        {/* util 폴더 안의 함수 적용 */}
         <img src={getEmotionImage(emotionId)} />
       </div>
       <div className="info_section">

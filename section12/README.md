@@ -288,3 +288,191 @@ import "./Header.css"
 2. css 파일 작성
 
 ## 일기 관리 기능 구현하기 1
+
+### 일기 데이터 관리
+
+#### 1. `useReducer` 훅을 사용하여 일기 데이터 관리
+
+```jsx
+import { useReducer } from "react"
+```
+
+#### 2. reducer 함수 작성
+
+```jsx
+function reducer(state, action) {
+  return state
+}
+```
+
+#### 3. 컴포넌트에 랜더링
+
+```jsx
+function App() {
+  // useReducer() 훅을 사용해서 데이터를 관리
+  //useReducer(reducer함수, 임시 일기 데이터)
+  const [data, dispatch] = useReducer(reducer, mockData)
+}
+```
+
+#### 4. moxkData 작성
+
+- 일기 데이터의 초기값
+
+  ```jsx
+  // 임시 일기 데이터
+  const mockData = [
+    {
+      id: 1,
+      createdDate: new Date().getTime(), // 타임스템프로 날짜 생성
+      emotionId: 1,
+      content: "1번 일기 내용",
+    },
+  ]
+  ```
+
+## 일기 관리 기능 구현하기 2
+
+- 일기 데이터 추가, 수정, 삭제
+
+---
+
+### 일기 데이터 추가
+
+1. reducer 함수 작성
+
+```jsx
+function reducer(state, action) {
+  switch (action.type) {
+    case "CREATE":
+      return [action.data, ...state] // 새로운 데이터 + 기존 데이터
+    default:
+      return state
+  }
+}
+```
+
+2. 일기 추가 함수 작성
+
+- 새로운 일기를 추가하기 위해 dispatch 호출
+
+```jsx
+function App() {
+  // 일기 추가가 되면 data에 추가되는데, 이때 useReducer 훅을 사용하여 상태를 관리
+  const [data, dispatch] = useReducer(reducer, mockData)
+  const idRef = useRef(3) // id값을 관리하기 위한 useRef
+
+  // 새로운 일기 추가
+  const onCreate = (createdDate, emotionId, content) => {
+  dispatch({
+    type: "CREATE", // 액션 타입
+    data: {
+      id: idRef.current++, // 고유 ID 생성
+      createdDate,
+      emotionId,
+      content,
+    },
+  });
+};
+```
+
+3. 일기 추가 버튼
+
+```jsx
+<button
+  onClick={() => {
+    onCreate(new Date().getTime(), 1, "Hello")
+  }}
+>
+  일기 추가 테스트
+</button>
+```
+
+---
+
+#### id값 관리
+
+1. useRef 훅을 사용하여 id값 관리
+
+```jsx
+import { useRef } from "react"
+```
+
+2. idRef.current++로 id값을 관리
+
+```jsx
+const idRef = useRef(3) // id값을 관리하기 위한 useRef
+```
+
+---
+
+### 일기 데이터 수정, 삭제
+
+1. 수정, 삭제 함수 작성
+
+- 컴포넌트를 렌더링하는 함수 안에 작성 ->
+- useReducer 훅으로 일기 데이터를 관리하고 있으므로 데이터 변경 시, dispatch 함수를 사용하여 action 객체를 전달
+
+2. reducer 함수 작성
+
+- action 객체의 type에 따라 데이터를 수정, 삭제
+- switch문으로 action.type에 따라 다른 작업을 수행
+
+3. 컴포넌트 렌더링하는 함수의 return 부분에 수정, 삭제 함수를 전달
+
+- 기능을 적용하고 싶은 태그에 넣기
+- 일기 수정, 삭제하는 함수를 이벤트 핸들러로 적용
+
+---
+
+### 일기 데이터와 일기 관련 함수를 하위 컴포넌트에 전달
+
+1. `createContext`을 사용하여 상위 컴포넌트의 데이터를 하위 컴포넌트에 전달
+
+```jsx
+import { createContext } from "react"
+```
+
+2. `createContext()` 함수로 데이터를 전달할 컨텍스트 생성
+
+```jsx
+// 일기 데이터, 일기 데이터 관련 함수도 Context를 통해서 다른 컴포넌트에 전달
+const DiaryStateContext = createContext() // 일기데이터
+const DiaryDispatchContext = createContext() // 일기데이터 관련 함수
+```
+
+3. 라우트 컴포넌트 아래에 있는 모든 페이지 컴포넌트에 데이터 전달
+
+- 라우트 컴포넌트 바깥에 `<StateContext.Provide>`로 감싸기
+- value에 데이터 전달
+
+```jsx
+<DiaryStateContext.Provider value={data}>
+  <DiaryDispatchContext.Provider value={(onCreate, onUpdate, onDelete)}>
+    {/* 라우터들~~~ */}
+  </DiaryDispatchContext.Provider>
+</DiaryStateContext.Provider>
+```
+
+## Home 페이지 구현하기 1. UI
+
+1. Home 페이지 구현
+- 하위 컴포넌트로 DiaryList 컴포넌트를 렌더링
+
+2. DiaryList 컴포넌트 구현
+- jsx, css 파일 생성
+
+3. DiaryItem 컴포넌트 구현
+- jsx, css 파일 생성
+
+## Home 페이지 구현하기 2. 기능
+
+## Home 페이지 구현하기 3. 회고
+
+## New 페이지 구현하기 1. UI
+
+## New 페이지 구현하기 2. 기능
+
+## Edit 페이지 구현하기 1. UI
+
+## Diary 페이지 구현하기
