@@ -471,7 +471,167 @@ https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Ar
 
 ## Home 페이지 구현하기 2. 기능
 
-## Home 페이지 구현하기 3. 회고
+#### 1. 주요 기능
+
+1. **이전/다음 월 이동**: 
+   - 버튼 클릭으로 이전/다음 월로 이동.
+2. **선택한 월의 일기만 렌더링**:
+   - 해당 월에 작성된 일기만 필터링하여 화면에 출력.
+3. **일기 페이지 이동**:
+   - 일기 항목 클릭 시 해당 일기 상세 페이지로 이동.
+4. **정렬**:
+   - 최신순/오래된 순으로 일기 데이터를 정렬.
+
+---
+
+#### 2. 코드 설명
+
+1. **이전/다음 월 이동**
+   - **이벤트 핸들러**:
+     - `onDecreaseMonth`/`onIncreaseMonth`로 월 변경.
+   - **코드**:
+     ```js
+     const onIncreaseMonth = () => {
+       setPivotDate(new Date(pivotDate.getFullYear(), pivotDate.getMonth() + 1));
+     };
+
+     const onDecreaseMonth = () => {
+       setPivotDate(new Date(pivotDate.getFullYear(), pivotDate.getMonth() - 1));
+     };
+     ```
+
+2. **선택 월의 일기 렌더링**
+   - **필터링 함수**:
+     - `getMonthlyData`로 해당 월의 시작/끝 날짜를 기준으로 데이터를 필터링.
+   - **코드**:
+     ```js
+     const getMonthlyData = (pivotDate, data) => {
+       const beginTime = new Date(pivotDate.getFullYear(), pivotDate.getMonth(), 1).getTime();
+       const endTime = new Date(pivotDate.getFullYear(), pivotDate.getMonth() + 1, 0).getTime();
+       return data.filter(item => beginTime <= item.createdDate && item.createdDate <= endTime);
+     };
+     const monthlyData = getMonthlyData(pivotDate, data);
+     ```
+
+3. **일기 상세 페이지 이동**
+   - **DiaryItem 컴포넌트**:
+     - 클릭 시 `useNavigate`로 `/diary/:id`로 이동.
+   - **코드**:
+     ```js
+     const goDiaryPage = () => {
+       nav(`/diary/${id}`);
+     };
+     ```
+
+4. **정렬 기능**
+   - **정렬 상태 관리**:
+     - `sortType`으로 정렬 기준 관리.
+   - **정렬 함수**:
+     - 최신순/오래된 순으로 데이터 정렬.
+   - **코드**:
+     ```js
+     const getSortedData = () => {
+       return data.toSorted((a, b) => 
+         sortType === "oldest" 
+           ? a.createdDate - b.createdDate 
+           : b.createdDate - a.createdDate
+       );
+     };
+     const sortedData = getSortedData();
+     ```
+
+---
+
+#### 3. 동작 흐름
+
+1. **이전/다음 월 이동**:
+   - 월 변경 → `getMonthlyData` 호출 → 새로운 월의 데이터 렌더링.
+2. **필터링**:
+   - `getMonthlyData`로 선택된 월의 데이터만 필터링.
+3. **일기 클릭**:
+   - `useNavigate`로 동적 경로(`/diary/:id`)로 이동.
+4. **정렬**:
+   - `sortType` 변경 → `getSortedData`로 정렬된 데이터 렌더링.
+
+---
+
+#### 4. 복습 포인트
+
+1. **월 이동 버튼**:
+   - `setPivotDate`로 날짜 변경.
+2. **필터링**:
+   - `getMonthlyData`로 해당 월의 데이터만 반환.
+3. **정렬**:
+   - `sortType`로 최신순/오래된 순 정렬.
+4. **페이지 이동**:
+   - `useNavigate`로 동적 경로 이동 (`/diary/:id`).
+
+---
+
+## Home 페이지 구현하기_정리
+
+### 1. 일기 데이터 저장
+  - `useReducer` 훅을 사용하여 일기 데이터 관리
+  - 다른 컴포넌트에서 일기데이터 사용가능하도록 Router 컴포넌트로 감싸기
+    - props, context는 부모 -> 자식 방향으로만 전달 가능
+    - so, Router 컴포넌트로 감싸서 모든 자식 컴포넌트에 데이터 전달
+    ```jsx
+    const [data, dispatch] = useReducer(reducer, mockData);
+    ```
+---
+
+### 2. 일기 데이터 전달
+  - `context`를 사용하여 데이터를 하위 컴포넌트에 전달
+    - createContext() 함수로 데이터를 전달할 컨텍스트 생성
+    - Provider 컴포넌트로 데이터를 감싸서 하위 컴포넌트에 전달
+    - props drilling을 방지하고, 데이터 전달을 간편
+
+    ```jsx
+    const DiaryStateContext = createContext();
+    const DiaryDispatchContext = createContext();
+    ```
+
+---
+
+### 3. Home.jsx
+
+  - 날짜를 월별로 이동하는 헤더
+  - 헤더에 해당하는 월의 일기 데이터 필터링
+
+  #### 이전 월, 다음 월 이동 기능
+
+  - pivotDate를 `useState` 훅으로 관리
+  - `onIncrease`, `onDecrease` 함수로 pivotDate 변경
+
+  #### 해당 월에 해당하는 일기만 보여주기
+
+  - pivotDate를 인자로 getMonthDiaries 함수 호출
+
+    - 컴포넌트 외부에 선언 (외부에서 인자 데이터 받기 가능 + 함수 복잡..)
+    - 타임스템프로 시작 날~ 끝 날 구하기
+    - filter로 해당 월의 일기만 추출
+
+  - `monthlyDate()`-> 리렌더링 될 때마다 해당 월의 일기만 보여줌
+    - 해당 함수를 props로 전달하여 하위 컴포넌트(DiaryList,DiaryItem)에서 사용
+
+---
+
+### 4. DiaryList.jsx
+
+  - 일기 정렬
+  - 새 일기 추가
+  - 일기 리스트 렌더링
+  - 일기 데이터를 받아와서 DiaryItem 컴포넌트로 전달
+
+  #### 일기 정렬
+
+  - 이벤트 핸들러로 setSortType 함수 호출
+  - useState 훅으로 sortType 상태 관리 (정렬은 임시데이터 이므로 state로 관리)
+  - 실제 정렬은 getSoredData 함수로 처리
+  - 정렬된 일기는 props를 통해 `DiaryList.jsx`에서 화면에 렌더링
+
+
+---
 
 ## New 페이지 구현하기 1. UI
 
