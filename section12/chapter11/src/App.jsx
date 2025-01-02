@@ -47,6 +47,8 @@ function reducer(state, action) {
   }
 }
 
+// 해당 월에 해당하는 일기만 조회할 수 있도록 하는 기능을 위해
+// 다른 컴포넌트에서 사용할 수 있도록 export
 export const DiaryStateContext = createContext();
 export const DiaryDispatchContext = createContext();
 

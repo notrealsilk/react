@@ -465,6 +465,10 @@ const DiaryDispatchContext = createContext() // 일기데이터 관련 함수
 3. DiaryItem 컴포넌트 구현
 - jsx, css 파일 생성
 
+Sort 메서드 비교함수 관련 아티클
+
+https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+
 ## Home 페이지 구현하기 2. 기능
 
 ## Home 페이지 구현하기 3. 회고
