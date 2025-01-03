@@ -9,6 +9,7 @@ const Diary = () => {
   const params = useParams();
   const nav = useNavigate();
 
+  // useDiary 커스텀 훅을 사용하여 id에 해당하는 일기를 불러옴
   const curDiaryItem = useDiary(params.id);
 
   if (!curDiaryItem) {
@@ -19,6 +20,7 @@ const Diary = () => {
   const title = getStringedDate(new Date(createdDate));
 
   return (
+    //헤더
     <div>
       <Header
         title={`${title} 기록`}

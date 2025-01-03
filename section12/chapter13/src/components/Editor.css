@@ -1,3 +1,4 @@
+/* 모든 섹션에 적용 */
 .Editor > section {
   margin-bottom: 40px;
 }
@@ -7,6 +8,8 @@
   font-weight: bold;
 }
 
+/* 여러 태그 같은 스타일 적용 */
+/* input, textarea */
 .Editor > section > input,
 textarea {
   background-color: rgb(236, 236, 236);
@@ -16,21 +19,22 @@ textarea {
   padding: 10px 20px;
 }
 
+/* 일기 입력창 */
 .Editor > section > textarea {
   padding: 20px;
   width: 100%;
   min-height: 200px;
-  resize: vertical;
-  box-sizing: border-box;
+  resize: vertical; /* 세로로만 사이즈 늘림 */
+  box-sizing: border-box; /* 입력창이 화면 밖으로 안 나가게 설정 */
 }
 
 .Editor .emotion_section .emotion_list_wrapper {
-  display: flex;
-  justify-content: space-around;
-  gap: 2%;
+  display: flex; /* 요소 가로 배치 */
+  justify-content: space-around; /* 요소 가운데 배치 */
+  gap: 2%; /* 요소 간격 */
 }
 
 .Editor .button_section {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* 버튼이 양 끝으로 떨어지게 설정 */
 }

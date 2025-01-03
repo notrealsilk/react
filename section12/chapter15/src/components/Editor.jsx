@@ -34,7 +34,7 @@ const Editor = ({ initData, onSubmit }) => {
     if (initData) {
       setInput({
         ...initData,
-        createdDate: new Date(Number(initData.createdDate)),
+        createdDate: new Date(Number(initData.createdDate)),//date는 날짜 형변환 해서 넣어주기
       });
     }
   }, [initData]);

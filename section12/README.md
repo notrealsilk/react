@@ -626,17 +626,449 @@ https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Ar
   #### 일기 정렬
 
   - 이벤트 핸들러로 setSortType 함수 호출
-  - useState 훅으로 sortType 상태 관리 (정렬은 임시데이터 이므로 state로 관리)
+  - `useState` 훅으로 sortType 상태 관리 (정렬은 임시데이터 이므로 state로 관리)
   - 실제 정렬은 getSoredData 함수로 처리
-  - 정렬된 일기는 props를 통해 `DiaryList.jsx`에서 화면에 렌더링
+  - 정렬된 일기는 props를 통해 `DiaryItem.jsx`에서 화면에 렌더링
 
 
 ---
 
 ## New 페이지 구현하기 1. UI
+![img](./image/5.png)
+
+---
+
+### 💡 **UI 구성 요소**
+
+1. **헤더 (오늘의 날짜)**
+   - **날짜 입력 필드**로 오늘의 날짜를 선택.
+   - **코드**:
+     ```jsx
+     <section className="date_section">
+       <h4>오늘의 날짜</h4>
+       <input type="date" />
+     </section>
+     ```
+
+2. **감정 선택 (EmotionItem 컴포넌트)**
+   - 감정을 선택할 수 있는 **이미지 버튼** 제공.
+   - 선택된 감정에 따라 **배경색이 변경**되도록 설정.
+   - **코드**:
+     ```jsx
+     <section className="emotion_section">
+       <h4>오늘의 감정</h4>
+       <div className="emotion_list_wrapper">
+         {emotionList.map((item) => (
+           <EmotionItem
+             key={item.emotionId}
+             {...item}
+             isSelected={item.emotionId === emotionId}
+           />
+         ))}
+       </div>
+     </section>
+     ```
+
+3. **일기 쓰기**
+   - **텍스트 입력 필드**로 일기 내용을 작성.
+   - **코드**:
+     ```jsx
+     <section className="content_section">
+       <h4>오늘의 일기</h4>
+       <textarea placeholder="오늘은 어땠나요?" />
+     </section>
+     ```
+
+4. **하단 버튼 (취소하기 / 작성완료)**
+   - **버튼 컴포넌트**를 활용하여 취소 및 작성 완료 기능 제공.
+   - **코드**:
+     ```jsx
+     <section className="button_section">
+       <Button text={"취소하기"} />
+       <Button text={"작성완료"} type={"POSITIVE"} />
+     </section>
+     ```
+
+---
+
+### 🎨 **스타일 적용 요약 (CSS)**
+
+| **요소**         | **스타일 적용**                                     |
+|------------------|----------------------------------------------------|
+| 전체 섹션        | `.Editor > section { margin-bottom: 40px; }`        |
+| 입력 필드        | `input, textarea { background-color: #ececec; }`    |
+| 일기 입력창      | `textarea { min-height: 200px; resize: vertical; }` |
+| 감정 리스트      | `.emotion_list_wrapper { display: flex; gap: 2%; }` |
+| 버튼 배치        | `.button_section { display: flex; justify-content: space-between; }` |
+| 감정 선택 효과   | `.EmotionItem_on_X { background-color: ...; }`      |
+
+---
+
+### 📌 **EmotionItem 컴포넌트**
+- **감정별로 다른 색상**을 적용하여 선택 상태를 시각적으로 구분.
+- **클래스명 동적 추가**:
+  ```jsx
+  <div className={`EmotionItem ${isSelected ? `EmotionItem_on_${emotionId}` : ""}`}>
+  ```
+
+---
+
+### 📝 **기능 흐름 요약**
+
+1. **날짜 선택** → 날짜 입력 필드에서 오늘의 날짜 선택.
+2. **감정 선택** → 감정을 클릭하면 해당 감정이 선택되며, 색상이 변경됨.
+3. **일기 쓰기** → 텍스트 입력 필드에 오늘의 일기를 작성.
+4. **버튼 클릭**:
+   - **취소하기** → 일기 작성을 취소.
+   - **작성완료** → 일기 작성 완료 후 저장.
+
+---
 
 ## New 페이지 구현하기 2. 기능
 
-## Edit 페이지 구현하기 1. UI
+### 💡 **구현 흐름 **
+
+1. **New 페이지**
+   - **새 일기 작성 페이지**로 이동.
+   - **작성완료 버튼 클릭 시** 입력된 일기 데이터를 저장하고 홈으로 이동.
+
+2. **Editor 컴포넌트**
+   - **날짜 선택**, **감정 선택**, **일기 내용 작성** UI 제공.
+   - 입력된 데이터를 **상태 관리**하고, **onSubmit** 함수를 통해 상위 컴포넌트로 전달.
+
+3. **EmotionItem 컴포넌트**
+   - 감정 선택 시 **클릭 이벤트**로 선택된 감정 ID를 업데이트.
+   - 선택된 감정에 따라 **동적 스타일 적용**.
+
+---
+
+### 🛠️ **New 컴포넌트 주요 코드**
+```jsx
+const New = () => {
+  const { onCreate } = useContext(DiaryDispatchContext);
+  const nav = useNavigate();
+
+  // 작성완료 버튼 클릭 시 데이터 전달
+  const onSubmit = (input) => {
+    onCreate(input.createdDate.getTime(), input.emotionId, input.content);
+    nav("/", { replace: true }); // 홈으로 이동
+  };
+
+  return (
+    <div>
+      <Header title="새 일기 쓰기" leftChild={<Button onClick={() => nav(-1)} text="< 뒤로 가기" />} />
+        {/* nav(-1) : 뒤로가기 */}
+      <Editor onSubmit={onSubmit} />
+    </div>
+  );
+};
+```
+
+---
+
+### ✏️ **Editor 컴포넌트 주요 코드**
+
+1. **날짜 선택**
+   - 날짜를 **`<input type="date">`**로 선택하고 상태를 업데이트.
+   ```jsx
+   <input
+     name="createdDate"
+     value={getStringedDate(input.createdDate)}
+     onChange={onChangeInput}
+     type="date"
+   />
+   ```
+
+2. **감정 선택**
+   - 감정 리스트를 **`map` 함수**로 렌더링하고 클릭 시 상태 업데이트.
+   ```jsx
+   {emotionList.map((item) => (
+     <EmotionItem
+       key={item.emotionId}
+       {...item}
+       isSelected={item.emotionId === input.emotionId}
+       onClick={() =>
+         onChangeInput({ target: { name: "emotionId", value: item.emotionId } })
+       }
+     />
+   ))}
+   ```
+
+3. **일기 내용 작성**
+   - **`<textarea>`**로 일기 내용을 입력받고 상태 업데이트.
+   ```jsx
+   <textarea
+     name="content"
+     placeholder="오늘은 어땠나요?"
+     onChange={onChangeInput}
+   />
+   ```
+
+4. **작성완료 버튼**
+   - 버튼 클릭 시 **onSubmit** 함수 호출.
+   ```jsx
+   <Button onClick={onSubmitButtonClick} text="작성완료" type="POSITIVE" />
+   ```
+
+---
+
+### 🎨 **EmotionItem 컴포넌트 주요 코드**
+- **클릭 이벤트 처리**로 선택된 감정 ID 업데이트.
+- 선택된 감정에 따라 **배경색 변경**.
+```jsx
+<div
+  onClick={onClick}
+  className={`EmotionItem ${isSelected ? `EmotionItem_on_${emotionId}` : ""}`}
+>
+  <img className="emotion_img" src={getEmotionImage(emotionId)} />
+  <div className="emotion_name">{emotionName}</div>
+</div>
+```
+
+---
+
+### 📌 **복습 포인트**
+
+1. **데이터 전달 흐름**:
+   - `Editor` → `New` → `DiaryDispatchContext`(`onCreate` 함수)로 데이터 전달.
+
+2. **상태 관리**:
+   - **`useState`**로 날짜, 감정, 일기 내용을 상태로 관리.
+   - 상태 변경 시 **onChange** 이벤트로 업데이트.
+
+3. **페이지 이동**:
+   - **`useNavigate`**로 뒤로 가기 및 홈으로 이동 처리.
+
+---
+
+## Edit 페이지 구현하기
+
+### 🛠 **구현 흐름**
+
+1. **Edit 페이지**에 기존 일기 데이터를 불러와 수정할 수 있도록 구현.
+2. 수정된 일기 데이터를 **onUpdate 함수**로 업데이트하고 홈 화면으로 이동.
+3. 일기를 삭제할 경우 **onDelete 함수**를 호출하여 데이터를 삭제하고 홈으로 이동.
+
+---
+
+### 🔑 **Edit 컴포넌트 주요 코드 설명**
+
+1. **기존 일기 데이터 불러오기**
+   - `useParams`로 URL에서 일기 ID를 가져와 해당 데이터를 조회.
+   - 조회된 데이터가 없으면 경고 메시지를 띄우고 홈으로 이동.
+   - **코드**:
+     ```jsx
+     useEffect(() => {
+       const currentDiaryItem = data.find((item) => String(item.id) === String(params.id));
+       if (!currentDiaryItem) {
+         window.alert("존재하지 않는 일기입니다.");
+         nav("/", { replace: true });
+       }
+       setCurDiaryItem(currentDiaryItem);
+     }, [params.id]);
+     ```
+
+2. **일기 수정 기능**
+   - 사용자가 입력한 데이터를 `onUpdate` 함수로 전달.
+   - 수정 완료 후 홈으로 이동.
+   - **코드**:
+     ```jsx
+     const onSubmit = (input) => {
+       if (window.confirm("일기를 정말 수정할까요?")) {
+         onUpdate(params.id, input.createdDate.getTime(), input.emotionId, input.content);
+         nav("/", { replace: true });
+       }
+     };
+     ```
+
+3. **일기 삭제 기능**
+   - **삭제 버튼 클릭 시 확인창**을 띄우고, 확인을 누르면 `onDelete` 함수로 일기 삭제.
+   - 삭제 후 홈으로 이동.
+   - **코드**:
+     ```jsx
+     const onClickDelete = () => {
+       if (window.confirm("일기를 정말 삭제할까요? 다시 복구되지 않아요!")) {
+         onDelete(params.id);
+         nav("/", { replace: true });
+       }
+     };
+     ```
+
+---
+
+### ✏️ **Editor 컴포넌트 주요 코드 설명**
+
+1. **초기 데이터 설정**
+   - `initData`를 통해 기존 일기 데이터를 불러와 상태를 설정.
+   - **코드**:
+     ```jsx
+     useEffect(() => {
+       if (initData) {
+         setInput({
+           ...initData,
+           createdDate: new Date(Number(initData.createdDate)),
+         });
+       }
+     }, [initData]);
+     ```
+
+2. **날짜, 감정, 내용 수정**
+   - 사용자가 입력한 값을 상태로 업데이트.
+   - **코드**:
+     ```jsx
+     const onChangeInput = (e) => {
+       let name = e.target.name;
+       let value = e.target.value;
+
+       if (name === "createdDate") {
+         value = new Date(value);
+       }
+
+       setInput({
+         ...input,
+         [name]: value,
+       });
+     };
+     ```
+
+3. **작성완료 버튼 클릭 시 수정 완료**
+   - 수정된 데이터를 `onSubmit` 함수로 전달.
+   - **코드**:
+     ```jsx
+     const onSubmitButtonClick = () => {
+       onSubmit(input);
+     };
+     ```
+
+---
+
+### 📌 **핵심 포인트**
+
+1. **기존 일기 데이터 불러오기**:
+   - `useParams`로 URL의 일기 ID 가져오기.
+   - 조회된 데이터를 `useEffect`로 상태에 저장.
+
+2. **일기 수정**:
+   - `onUpdate` 함수로 수정된 데이터 전달.
+   - 수정 완료 후 홈 화면으로 이동.
+
+3. **일기 삭제**:
+   - `onDelete` 함수로 데이터 삭제.
+   - 삭제 후 홈 화면으로 이동.
+
+---
 
 ## Diary 페이지 구현하기
+
+### 💡 **Diary 페이지 주요 기능**
+
+1. **URL 파라미터로 일기 ID 가져오기**  
+   - **`useParams`** 훅을 사용하여 URL의 ID 값을 가져옴.
+   
+2. **일기 데이터 조회 (커스텀 훅 사용)**  
+   - **`useDiary`** 커스텀 훅으로 해당 ID에 맞는 일기 데이터를 불러옴.
+   
+3. **일기 수정 페이지 이동**  
+   - **`useNavigate`** 훅을 사용하여 수정 페이지로 이동.
+
+---
+
+### 🛠 **Diary 컴포넌트 주요 코드**
+
+1. **URL에서 일기 ID 가져오기**
+   ```jsx
+   const params = useParams();
+   ```
+
+2. **커스텀 훅으로 일기 데이터 조회**
+   - **`useDiary(params.id)`**로 해당 일기 데이터를 불러옴.
+   - 데이터가 없으면 "데이터 로딩중...!" 메시지 출력.
+   ```jsx
+   const curDiaryItem = useDiary(params.id);
+   if (!curDiaryItem) {
+     return <div>데이터 로딩중...!</div>;
+   }
+   ```
+
+3. **일기 정보 렌더링**
+   - **날짜**와 **감정**을 화면에 출력하고, **수정하기 버튼** 추가.
+   ```jsx
+   const { createdDate, emotionId, content } = curDiaryItem;
+   const title = getStringedDate(new Date(createdDate));
+
+   return (
+     <div>
+       <Header
+         title={`${title} 기록`}
+         leftChild={<Button onClick={() => nav(-1)} text={"< 뒤로 가기"} />}
+         rightChild={<Button onClick={() => nav(`/edit/${params.id}`)} text={"수정하기"} />}
+       />
+       <Viewer emotionId={emotionId} content={content} />
+     </div>
+   );
+   ```
+
+---
+
+### 🔧 **useDiary 커스텀 훅**
+
+- 일기 데이터를 불러오는 로직을 **커스텀 훅**으로 분리하여 재사용성 향상.
+- 해당 ID에 맞는 일기를 조회하고, 데이터가 없으면 홈 화면으로 리디렉션.
+- **코드**:
+  ```jsx
+  const useDiary = (id) => {
+    const data = useContext(DiaryStateContext);
+    const [curDiaryItem, setCurDiaryItem] = useState();
+    const nav = useNavigate();
+
+    useEffect(() => {
+      const currentDiaryItem = data.find((item) => String(item.id) === String(id));
+      if (!currentDiaryItem) {
+        window.alert("존재하지 않는 일기입니다.");
+        nav("/", { replace: true });
+      }
+      setCurDiaryItem(currentDiaryItem);
+    }, [id, data]);
+
+    return curDiaryItem;
+  };
+  ```
+
+---
+
+### 📆 **날짜 형식 변환 함수 (`getStringedDate`)**
+
+- 날짜 객체를 **`yyyy-mm-dd`** 형식의 문자열로 변환.
+- **코드**:
+  ```js
+  export const getStringedDate = (targetDate) => {
+    let year = targetDate.getFullYear();
+    let month = targetDate.getMonth() + 1;
+    let date = targetDate.getDate();
+
+    if (month < 10) month = `0${month}`;
+    if (date < 10) date = `0${date}`;
+
+    return `${year}-${month}-${date}`;
+  };
+  ```
+
+---
+
+### 📌 **복습 포인트**
+
+1. **`useParams`로 URL 파라미터 가져오기**  
+   - 일기 ID 조회 및 데이터 출력.
+
+2. **커스텀 훅 (`useDiary`) 사용**  
+   - 일기 데이터 조회 로직을 재사용 가능하도록 분리.
+
+3. **`useNavigate`로 페이지 이동**  
+   - 뒤로 가기 버튼 및 수정 페이지 이동 처리.
+
+4. **날짜 형식 변환 함수 사용**  
+   - 날짜를 **`yyyy-mm-dd`** 형식으로 변환하여 화면에 출력. 
+
+---
+
+## 웹 스토리지 사용

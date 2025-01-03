@@ -8,7 +8,8 @@ body {
   margin: 0px;
   width: 100%;
   background-color: rgb(246, 246, 246);
-  display: flex;
+  display: flex; /* 세로로 배치..모든 태그를 감싸면서 스타일 적용 */
+  /* 아래부분 버튼까지 적용 */
 }
 
 #root {

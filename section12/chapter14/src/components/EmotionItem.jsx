@@ -8,6 +8,7 @@ const EmotionItem = ({
   onClick,
 }) => {
   return (
+    // 이벤트 핸들러를 받아서 클릭 이벤트를 처리할 수 있도록 함
     <div
       onClick={onClick}
       className={`EmotionItem ${

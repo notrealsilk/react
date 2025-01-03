@@ -7,10 +7,11 @@
 }
 
 .EmotionItem .emotion_img {
-  width: 50%;
+  width: 50%; /* 이미지 사이즈 */
   margin-bottom: 10px;
 }
 
+/* 감정에 따라 색다르게! */
 .EmotionItem_on_1 {
   color: white;
   background-color: rgb(100, 201, 100);
