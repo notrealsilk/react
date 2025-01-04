@@ -1072,3 +1072,292 @@ const New = () => {
 ---
 
 ## 웹 스토리지 사용
+
+### 최적화??
+
+1. 최적화 필요성
+
+- 비용이 많이 드는 계산
+
+- 매우 여러번, 반복적으로 실행되는 연산 등에 사용
+
+2. 리액트 렌더링 최적화 관련 기능
+
+- useMemo : 계산된 값을 재사용
+- useCallback : 함수를 재사용
+- React.memo : 컴포넌트를 재사용
+
+-> but, 과하게 사용하면 성능 낮아짐 + 유지 보수 어려움 + 컴포넌트 구조 복잡
+
+---
+
+### 웹 스토리지
+
+![img](./image/6.png)
+
+- 웹 브라우저에 기본적으로 내장돼있는 DB
+
+- 설치, 라이브러리 X -> JS로 사용 가능
+
+### 기본 사용법
+
+1. `localStorage` 객체 사용   
+
+  `localStorage.setItem (저장할 데이터 키값(원시데이터), 실제 데이터 value 값)`
+
+  ```jsx
+  // 문자열 데이터 저장
+  localStorage.setItem("name", "kim");
+
+  // 객체 데이터 저장
+  //JSON.stringify() : 객체를 문자열로 변환
+  localStorage.setItem("user", JSON.stringify({ name: "kim", age: 20 }));
+  ```
+
+2. 개발자 도구에서 확인 가능
+
+  - Application 탭 -> Local Storage
+  - 사이트 별로 데이터 저장, 데이터는 `문자열` 형식으로 저장
+  ![img](./image/7.png)
+
+3. 데이터 불러오기
+
+  `localStorage.getItem(키값)`
+
+  ```jsx
+  // 문자열 데이터 불러오기
+  const name = localStorage.getItem("name");
+
+  // 객체 데이터 불러오기
+  //JSON.parse() : 문자열을 객체로 변환
+  // parse(undefined) : 에러 발생 -> null로 처리
+  // 데이터를 문자열 형식으로 저장해서 객체로 변환 해야 ㅇ
+  const user = JSON.parse(localStorage.getItem("user"));
+  ```
+
+4. 데이터 삭제
+
+  `localStorage.removeItem(키값)`
+
+  ```jsx
+  // 특정 데이터 삭제
+  localStorage.removeItem("name");
+
+  // 전체 데이터 삭제
+  localStorage.clear();
+  ```
+
+---
+
+### 감정 일기장에 `localStorage` 적용
+
+
+
+### 감정일기장 - 웹스토리지를 활용한 데이터 저장 기능 요약
+
+---
+
+### 🛠 **구현 흐름 요약**
+
+1. **데이터 저장**: 일기 데이터를 **localStorage**에 저장.
+2. **데이터 불러오기**: 페이지가 **첫 로드될 때 저장된 데이터**를 불러옴.
+3. **데이터 초기화**: 가장 큰 `id` 값을 찾아 **새로운 일기의 ID를 관리**.
+4. **로딩 상태 관리**: 데이터를 불러오는 동안 **로딩 메시지**를 출력.
+
+---
+
+### 🔧 **데이터 저장 - Reducer 수정**
+
+1. `reducer` 함수에서 일기 데이터 변경 시마다 **localStorage에 저장**.
+2. **코드**:
+   ```jsx
+   function reducer(state, action) {
+     let nextState;
+
+     switch (action.type) {
+       case "INIT":
+         return action.data;
+       case "CREATE":
+         nextState = [action.data, ...state];
+         break;
+       case "UPDATE":
+         nextState = state.map((item) =>
+           String(item.id) === String(action.data.id) ? action.data : item
+         );
+         break;
+       case "DELETE":
+         nextState = state.filter((item) => String(item.id) !== String(action.id));
+         break;
+       default:
+         return state;
+     }
+
+     // 변경된 데이터를 localStorage에 저장
+     localStorage.setItem("diary", JSON.stringify(nextState));
+     return nextState;
+   }
+   ```
+
+---
+
+### 🔄 **데이터 불러오기 - `useEffect`로 초기화**
+
+1. **컴포넌트가 최초 렌더링될 때(localStorage)**에서 데이터를 불러옴.
+2. **불러온 데이터를 파싱**하고, **배열이 아닌 경우 종료**.
+3. **가장 큰 ID를 찾고** 새로운 일기 ID를 설정.
+4. **코드**:
+   ```jsx
+   useEffect(() => {
+     const storedData = localStorage.getItem("diary");
+
+     if (!storedData) {
+       setIsLoading(false);
+       return;
+     }
+
+     const parsedData = JSON.parse(storedData);
+
+     if (!Array.isArray(parsedData)) {
+       setIsLoading(false);
+       return;
+     }
+
+     let maxId = 0;
+     parsedData.forEach((item) => {
+       if (Number(item.id) > maxId) maxId = item.id;
+     });
+
+     idRef.current = maxId + 1;
+
+     dispatch({
+       type: "INIT",
+       data: parsedData,
+     });
+
+     setIsLoading(false);
+   }, []);
+   ```
+
+---
+
+### 🔍 **상태 관리 - 로딩 상태 표시**
+
+- 데이터가 로드되기 전에 **로딩 메시지 출력**.
+- **코드**:
+   ```jsx
+   if (isLoading) {
+     return <div>데이터 로딩중입니다 ...</div>;
+   }
+   ```
+
+---
+
+### 📌 **핵심 포인트 요약**
+
+| 기능               | 설명                                 | 주요 코드                                  |
+|--------------------|------------------------------------|-------------------------------------------|
+| **데이터 저장**     | Reducer 함수에서 localStorage에 저장 | `localStorage.setItem("diary", JSON.stringify(nextState));` |
+| **데이터 불러오기** | useEffect로 초기 데이터 로드        | `const storedData = localStorage.getItem("diary");` |
+| **ID 관리**        | 가장 큰 ID를 찾아 idRef에 저장      | `idRef.current = maxId + 1;` |
+| **로딩 상태 관리**  | 데이터 로딩 중 메시지 출력          | `if (isLoading) { return <div>데이터 로딩중입니다 ...</div>; }` |
+
+---
+
+## 배포
+
+### 배포 준비
+
+1. 페이지 타이틀
+  ![img](./image/8.png)
+
+  - SPA에서는 페이지 타이틀을 변경하지 않으면 모든 페이지의 타이틀이 같아짐 (=html 파일이 하나)
+
+  ``` index.html
+  <title>감정 일기장</title>
+  ```
+
+  #### 페이지마다 페이지 타이틀 바꾸고 싶다면?
+
+  1-1. 해당 페이지 컴포넌트에서 `useEffect`로 페이지 타이틀 변경
+
+  ```jsx 
+  useEffect(() => {
+    const $title = document.getElementsByName("title")[0];
+    $title.innerText = "새 일기 쓰기";
+  }, []);
+  ```
+  1-2. 위의 변경 함수를 커스텀 훅으로 만들어서 사용
+  
+    - hooks/usePageTitle.js 파일 생성
+
+    - 각 페이지 컴포넌트에서 해당 훅을 사용
+
+    ```jsx 
+    import usePageTitle from "../hooks/usePageTitle";
+
+    const New = () => {
+      usePageTitle("새 일기 쓰기");
+      ...
+    };
+    ```
+
+2. FavIcon
+  ![img](./image/9.png)
+
+  2-1. public 폴더에 favicon.ico 파일 추가
+
+  2-2. index.html 파일에 favicon 링크 추가
+
+  ```html
+  <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+  ```
+
+3. 오픈 그래프
+  - 메타 태그 사용
+    ![img](./image/10.png)
+
+    ```html
+      <!-- 타이틀 -->
+      <meta property="og:title" content="감정 일기장" />
+      <!--설명 -->
+      <meta
+        property="og:description"
+        content="나만의 작은 감정 일기장"
+      />
+      <!-- 썸네일 -->
+      <meta property="og:image" content="/thumbnail.png" />
+    ```
+
+4. 프로젝트 빌드
+  ![img](./image/11.png)
+
+  ```bash
+  npm run build
+  ```
+
+### 배포 하기
+
+- 클라우드 서비스 사용
+
+  - Vercel (프론트엔드 개발자를 위한 클라우드 서비스), AWS, Firebase 등
+
+  - Vercel 사용
+
+    - Vercel 사이트 접속
+      - https://vercel.com/
+
+    - 프로젝트 코드 터미널 명령어로 로그인
+
+    ```bash
+    vercel login
+    ```
+    - 프로젝트 배포
+
+    ```bash
+    vercel
+    ```
+
+    ![img](./image/12.png)
+
+    - 배포 완료 후 URL로 접속
+

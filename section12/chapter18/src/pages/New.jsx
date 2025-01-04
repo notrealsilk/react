@@ -9,7 +9,7 @@ import usePageTitle from "../hooks/usePageTitle";
 const New = () => {
   const { onCreate } = useContext(DiaryDispatchContext);
   const nav = useNavigate();
-  usePageTitle("새 일기 쓰기");
+  usePageTitle("새 일기 쓰기"); // 페이지 타이틀
 
   const onSubmit = (input) => {
     onCreate(
